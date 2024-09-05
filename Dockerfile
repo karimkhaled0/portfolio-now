@@ -9,15 +9,15 @@ RUN apk add --no-cache libc6-compat git
 
 
 # Setup pnpm environment
-ENV PNPM_HOME="/pnpm"
+ENV PNPM_HOME="/npm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-RUN corepack prepare pnpm@latest --activate
+RUN corepack prepare npm@latest --activate
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --prefer-frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm install --frozen-lockfile --prefer-frozen-lockfile
 
 # Builder
 FROM base AS builder
@@ -29,7 +29,7 @@ WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN pnpm build
+RUN npm build
 
 
 ### Production image runner ###
